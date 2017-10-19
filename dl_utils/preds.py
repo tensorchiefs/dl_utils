@@ -45,38 +45,72 @@ def get_MAPS(pred):
     return (maps)
 
 
-def get_VI_MAPS(preds, pmass=0.66):
+def get_VI_MAPS(preds, pmass=0.66, label=None):
     """
-        Agrs:
-            preds a 2 dimensional array
-            pmass mass of the credibility interval
-        Returns:
-            the lower CI, MAPS, Upper CI, index of predicted class (max MAP)
+        Predicts the CI and the MAP, either for a spcified label or for the label with max MAP
+
+        :param preds: a 2 dimensional array
+        :param pmass: mass of the credibility interval
+        :param label: the label you want the VI and MAP, if None the class with the maximum MAP is use
+        :return: he lower CI, MAPS, Upper CI, index of predicted class (max MAP)
     """
+    if label == None:
+        all_labels = False
+    else:
+        all_labels = True
+
     num_classes = np.shape(preds)[1]
     MAPS = get_MAPS(preds)
     Pred = np.argmax(MAPS)
     MAP = MAPS[Pred]
-    if (math.isnan(MAP)):
-        print(" Pred", Pred, " MAP ", MAP, " MAPS ", MAPS)
-        import sys
-        sys.exit("Dumm")
-    VI = np.zeros(2)
-    MR = np.sum(preds[:, Pred] > (MAP)) / len(preds)  # Mass right from MAP
-    ML = np.sum(preds[:, Pred] <= (MAP)) / len(preds)
+    if (all_labels == False):
+        MAPS = get_MAPS(preds)
+        Pred = np.argmax(MAPS)
+        MAP = MAPS[Pred]
+        VI = np.zeros(2)
+        MR = np.sum(preds[:, Pred] > (MAP)) / len(preds)  # Mass right from MAP
+        ML = np.sum(preds[:, Pred] <= (MAP)) / len(preds)
 
-    # print("  ML ", ML, "  MR ", MR, " Pred", Pred, " MAP ", MAP)
-    if MR < pmass / 2:
-        # Right not possible
-        # print("Right not possible ", MR, " ", MAP, " max pred", Pred)
-        UP = 1.0
-        LO = np.percentile(preds[:, Pred], 100 * (1 - pmass))
-    elif ML < pmass / 2:
-        # print("Left not possible ML ", ML)
-        UP = np.percentile(preds[:, Pred], 100 * pmass)
-        LO = 0.0
-    else:
-        # print("All possible MR ", MR, "  ", ML)
-        LO = np.percentile(preds[:, Pred], 100 * ((1 - pmass) / 2))
-        UP = np.percentile(preds[:, Pred], 100 * (1 - ((1 - pmass) / 2)))
-    return LO, MAP, UP, Pred
+        # print("  ML ", ML, "  MR ", MR, " Pred", Pred, " MAP ", MAP)
+        if MR < pmass / 2:
+            # Right not possible
+            # print("Right not possible ", MR, " ", MAP, " max pred", Pred)
+            UP = 1.0
+            LO = np.percentile(preds[:, Pred], 100 * (1 - pmass))
+        elif ML < pmass / 2:
+            # print("Left not possible ML ", ML)
+            UP = np.percentile(preds[:, Pred], 100 * pmass)
+            LO = 0.0
+        else:
+            # print("All possible MR ", MR, "  ", ML)
+            LO = np.percentile(preds[:, Pred], 100 * ((1 - pmass) / 2))
+            UP = np.percentile(preds[:, Pred], 100 * (1 - ((1 - pmass) / 2)))
+        return LO, MAP, UP, Pred
+    #######################################
+    if (all_labels == True):
+        MAPS = get_MAPS(preds)
+        Pred = label
+        MAP = MAPS[label]
+        if (math.isnan(MAP)):
+            print(" Pred", Pred, " MAP ", MAP, " MAPS ", MAPS)
+            import sys
+            sys.exit("Dumm")
+        VI = np.zeros(2)
+        MR = np.sum(preds[:, Pred] > (MAP)) / len(preds)  # Mass right from MAP
+        ML = np.sum(preds[:, Pred] <= (MAP)) / len(preds)
+
+        # print("  ML ", ML, "  MR ", MR, " Pred", Pred, " MAP ", MAP)
+        if MR < pmass / 2:
+            # Right not possible
+            # print("Right not possible ", MR, " ", MAP, " max pred", Pred)
+            UP = 1.0
+            LO = np.percentile(preds[:, Pred], 100 * (1 - pmass))
+        elif ML < pmass / 2:
+            # print("Left not possible ML ", ML)
+            UP = np.percentile(preds[:, Pred], 100 * pmass)
+            LO = 0.0
+        else:
+            # print("All possible MR ", MR, "  ", ML)
+            LO = np.percentile(preds[:, Pred], 100 * ((1 - pmass) / 2))
+            UP = np.percentile(preds[:, Pred], 100 * (1 - ((1 - pmass) / 2)))
+        return LO, MAP, UP, Pred
