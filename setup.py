@@ -7,4 +7,4 @@ setup(name='dl_utils',
       author='Tensorchiefs',
       author_email='none@example.com',
       packages=['dl_utils'],
-      zip_safe=False, install_requires=['numpy'])
+      zip_safe=False)
