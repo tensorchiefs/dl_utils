@@ -116,7 +116,7 @@ def get_VI_MAPS(preds, pmass=0.66, label=None):
         return LO, MAP, UP, Pred
  
  def IQR(dist):
-     """
+    """
     Calculates the Interquartile range for a distribution
     Args:
         dist: a 1D aaray 
