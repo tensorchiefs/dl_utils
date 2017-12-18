@@ -19,7 +19,6 @@ def get_MAPS(pred):
     """
     Args:
         pred a [Number of Examples, Number of classes Tensor]
-
     Returns:
         The MAPs for all classes
     """
@@ -48,7 +47,6 @@ def get_MAPS(pred):
 def get_VI_MAPS(preds, pmass=0.66, label=None):
     """
         Predicts the CI and the MAP, either for a spcified label or for the label with max MAP
-
         :param preds: a 2 dimensional array
         :param pmass: mass of the credibility interval
         :param label: the label you want the VI and MAP, if None the class with the maximum MAP is use
@@ -114,8 +112,9 @@ def get_VI_MAPS(preds, pmass=0.66, label=None):
             LO = np.percentile(preds[:, Pred], 100 * ((1 - pmass) / 2))
             UP = np.percentile(preds[:, Pred], 100 * (1 - ((1 - pmass) / 2)))
         return LO, MAP, UP, Pred
- 
- def IQR(dist):
+    
+
+def IQR(dist):
     """
     Calculates the Interquartile range for a distribution
     Args:
