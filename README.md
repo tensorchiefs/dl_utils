@@ -20,7 +20,7 @@ Then we can import via:
   import dl_utils as dl
 ```
 
-and the use functions within dl_utils by starting with 
+and use all functions within dl_utils by starting with 
 ```
   dl.
 ```
