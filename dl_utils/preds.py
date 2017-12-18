@@ -114,3 +114,34 @@ def get_VI_MAPS(preds, pmass=0.66, label=None):
             LO = np.percentile(preds[:, Pred], 100 * ((1 - pmass) / 2))
             UP = np.percentile(preds[:, Pred], 100 * (1 - ((1 - pmass) / 2)))
         return LO, MAP, UP, Pred
+ 
+ def IQR(dist):
+     """
+    Calculates the Interquartile range for a distribution
+    Args:
+        dist: a 1D aaray 
+    Returns:
+        Interquartile range
+    """
+    return np.percentile(dist, 75) - np.percentile(dist, 25)
+
+def get_hpd(preds,p):
+    """
+    gets the hpd (highest probability density) for a prediction 
+    From Applied Statistical Inference (Held, Bove) Chapter 8.3
+    
+    Agrs:
+        preds a 1 dimensional array
+        p confidence level 
+        
+    Returns:
+        lower hpd limit, upper hpd limit
+    """
+    l=len(preds)
+    p=p
+    end=l-np.int(np.round((l*p)))
+    hb=np.int(np.round((l*p)))#higher bound
+    la=np.zeros((end,2))
+    for i in range(0,end):
+        la[i,:]=[np.sort(preds)[i],np.sort(preds)[i+hb]]
+    return la[np.where(np.min(la[:,1]-la[:,0])==la[:,1]-la[:,0]),:][0][0]
